@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import auth, donors, requests, admin
+from app.database import Base, engine
+from app.models import models
+
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Blood Donation Management System")
 
