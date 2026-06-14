@@ -1,21 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.models import Donor
-
 
 from app.schemas.schemas import DonorCreate, DonorUpdate
 
 router = APIRouter()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-def create_donor(donor_data: DonorCreate, db: Session = Depends(get_db)):
-    donor = Donor(
-        blood_type=donor_data.blood_type,
-        location=donor_data.location,
-        user_id=donor_data.user_id
-    )
+@router.post("/")
+def create_donor(blood_type: str, location: str, user_id: int, db: Session = Depends(get_db)):
+    donor = Donor(blood_type=blood_type, location=location, user_id=user_id)
     db.add(donor)
     db.commit()
     db.refresh(donor)
@@ -30,16 +25,13 @@ def get_donors(blood_type: str = None, db: Session = Depends(get_db)):
 
 
 @router.put("/{donor_id}")
-def update_donor(donor_id: int, donor_data: DonorUpdate, db: Session = Depends(get_db)):
+def update_donor(donor_id: int, blood_type: str, location: str, db: Session = Depends(get_db)):
     donor = db.query(Donor).filter(Donor.id == donor_id).first()
     if not donor:
         raise HTTPException(status_code=404, detail="Donor not found")
-
-    donor.blood_type = donor_data.blood_type
-    donor.location = donor_data.location
-
+    donor.blood_type = blood_type
+    donor.location = location
     db.commit()
-    db.refresh(donor)
     return donor
 
 

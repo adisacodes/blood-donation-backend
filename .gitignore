@@ -1,6 +1,17 @@
+# Virtual Environments
 venv/
-__pycache__/
+env/
+ENV/
+
+# Python Cache and Compiled files
+**/__pycache__/
 *.pyc
-.pytest_cache/
-blood_donation.db
-venv/
+*.pyo
+*.pyd
+
+# Databases
+*.db
+*.sqlite3
+
+# Environment Variables / Secrets
+.env
