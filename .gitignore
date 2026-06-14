@@ -1,3 +1,17 @@
-__pycache__/
-*.pyc
+# Virtual Environments
+venv/
+env/
+ENV/
 
+# Python Cache and Compiled files
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Databases
+*.db
+*.sqlite3
+
+# Environment Variables / Secrets
+.env
