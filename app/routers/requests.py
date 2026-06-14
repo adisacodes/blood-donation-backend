@@ -5,7 +5,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.database import get_db
-from app.models import BloodRequest, Donor
+from app.models.models import BloodRequest, Donor
 from app.schemas import (
     BloodRequestCreate, 
     BloodRequestUpdate, 
