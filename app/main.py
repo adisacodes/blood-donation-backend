@@ -4,10 +4,12 @@ from app.routers import auth, donors, requests, admin
 from app.database import engine
 from app.models import models
 
+# Initialize Database Tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Blood Donation Management System")
 
+# CORS Middleware Configurations
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -21,10 +23,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(donors.router, prefix="/donors", tags=["Donors"])
-app.include_router(requests.router, prefix="/requests", tags=["Requests"])
-app.include_router(admin.router, prefix="/admin", tags=["Admin"])
+# 🌟 FIXED PREFIXES: Added "/api" to all router paths to align with the frontend services
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(donors.router, prefix="/api/donors", tags=["Donors"])
+app.include_router(requests.router, prefix="/api/requests", tags=["Requests"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
 @app.get("/")
 def root():
