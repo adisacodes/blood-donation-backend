@@ -50,8 +50,7 @@ def signup_hospital(user_in: HospitalCreate, db: Session = Depends(get_db)):
     db.refresh(new_hospital)
     return new_hospital
 
-
-@router.post("/login")
+@router.post("/token")
 def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     # Look up by email instead of username to match the frontend state
     user = db.query(User).filter(User.email == credentials.email).first()
