@@ -1,45 +1,74 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models.models import Donor
-
-from app.schemas.schemas import DonorCreate, DonorUpdate
+from app.models.user import User
 
 router = APIRouter()
 
 
+# CREATE / REGISTER DONOR PROFILE
 @router.post("/")
 def create_donor(blood_type: str, location: str, user_id: int, db: Session = Depends(get_db)):
-    donor = Donor(blood_type=blood_type, location=location, user_id=user_id)
-    db.add(donor)
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Convert user into donor role + store donor info
+    user.role = "donor"
+    user.blood_group = blood_type
+    user.location = location
+
     db.commit()
-    db.refresh(donor)
-    return donor
+    db.refresh(user)
+
+    return {
+        "message": "Donor created successfully",
+        "user": user
+    }
 
 
+# GET ALL DONORS
 @router.get("/")
 def get_donors(blood_type: str = None, db: Session = Depends(get_db)):
+    query = db.query(User).filter(User.role == "donor")
+
     if blood_type:
-        return db.query(Donor).filter(Donor.blood_type == blood_type).all()
-    return db.query(Donor).all()
+        query = query.filter(User.blood_group == blood_type)
+
+    return query.all()
 
 
-@router.put("/{donor_id}")
-def update_donor(donor_id: int, blood_type: str, location: str, db: Session = Depends(get_db)):
-    donor = db.query(Donor).filter(Donor.id == donor_id).first()
-    if not donor:
+# UPDATE DONOR
+@router.put("/{user_id}")
+def update_donor(user_id: int, blood_type: str, location: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id, User.role == "donor").first()
+
+    if not user:
         raise HTTPException(status_code=404, detail="Donor not found")
-    donor.blood_type = blood_type
-    donor.location = location
+
+    user.blood_group = blood_type
+    user.location = location
+
     db.commit()
-    return donor
+    db.refresh(user)
+
+    return user
 
 
-@router.delete("/{donor_id}")
-def delete_donor(donor_id: int, db: Session = Depends(get_db)):
-    donor = db.query(Donor).filter(Donor.id == donor_id).first()
-    if not donor:
+# DELETE DONOR (remove donor role, don't delete user)
+@router.delete("/{user_id}")
+def delete_donor(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id, User.role == "donor").first()
+
+    if not user:
         raise HTTPException(status_code=404, detail="Donor not found")
-    db.delete(donor)
+
+    # Instead of deleting, demote user
+    user.role = "user"
+    user.blood_group = None
+    user.location = None
+
     db.commit()
-    return {"message": "Donor deleted"}
+
+    return {"message": "Donor removed successfully"}
