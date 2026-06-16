@@ -13,7 +13,6 @@ from app.schemas import (
 router = APIRouter()
 
 
-# ===================== CREATE =====================
 
 @router.post("/", response_model=BloodRequestResponse, status_code=status.HTTP_201_CREATED)
 def create_blood_request(
@@ -34,7 +33,6 @@ def create_blood_request(
     return db_request
 
 
-# ===================== READ ALL =====================
 
 @router.get("/", response_model=List[BloodRequestResponse])
 def get_all_blood_requests(
@@ -48,9 +46,6 @@ def get_all_blood_requests(
         .limit(limit)
         .all()
     )
-
-
-# ===================== READ BY ID =====================
 
 @router.get("/{request_id}", response_model=BloodRequestResponse)
 def get_blood_request_by_id(
@@ -68,7 +63,6 @@ def get_blood_request_by_id(
     return blood_request
 
 
-# ===================== UPDATE =====================
 
 @router.put("/{request_id}", response_model=BloodRequestResponse)
 def update_blood_request(
@@ -94,7 +88,6 @@ def update_blood_request(
     return blood_request
 
 
-# ===================== APPROVE REQUEST =====================
 
 @router.post("/{request_id}/approve", response_model=BloodRequestResponse)
 def approve_blood_request(
@@ -121,7 +114,7 @@ def approve_blood_request(
     return blood_request
 
 
-# ===================== REJECT REQUEST =====================
+
 
 @router.post("/{request_id}/reject", response_model=BloodRequestResponse)
 def reject_blood_request(
@@ -148,7 +141,6 @@ def reject_blood_request(
     return blood_request
 
 
-# ===================== DELETE (HARD DELETE) =====================
 
 @router.delete("/{request_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_blood_request(
